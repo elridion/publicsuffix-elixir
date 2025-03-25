@@ -9,12 +9,9 @@ defmodule PublicSuffix.RemoteFileFetcher do
     :inets.start()
     :ssl.start()
 
-    url
-    |> to_char_list
-    |> :httpc.request
-    |> case do
-         {:ok, {{_, 200, _}, _headers, body}} -> {:ok, to_string(body)}
-         otherwise -> {:error, otherwise}
-       end
+    case :httpc.request(url) do
+      {:ok, {{_, 200, _}, _headers, body}} -> {:ok, to_string(body)}
+      otherwise -> {:error, otherwise}
+    end
   end
 end

@@ -37,7 +37,7 @@ defmodule PublicSuffix.ConfigurationTest do
   defp get_public_suffix(domain) do
     expression = "#{inspect(domain)} |> PublicSuffix.public_suffix |> IO.puts"
     assert {result, 0} = System.cmd("mix", ["run", "-e", expression])
-    result |> String.strip() |> String.split("\n") |> List.last()
+    result |> String.trim() |> String.split("\n") |> List.last()
   end
 
   defp recompile_lib(env \\ []) do
