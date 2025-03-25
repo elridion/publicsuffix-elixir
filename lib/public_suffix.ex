@@ -1,5 +1,6 @@
 defmodule PublicSuffix do
-  import PublicSuffix.{RemoteFileFetcher, RulesParser}
+  import PublicSuffix.RemoteFileFetcher
+  import PublicSuffix.RulesParser
 
   @moduledoc """
   Implements the publicsuffix algorithm described at https://publicsuffix.org/list/.
@@ -96,9 +97,9 @@ defmodule PublicSuffix do
     |> String.split(".")
     |> find_prevailing_rule(options)
     |> case do
-         {:exception, rule} -> "!" <> Enum.join(rule, ".")
-         {:normal, rule} -> Enum.join(rule, ".")
-       end
+      {:exception, rule} -> "!" <> Enum.join(rule, ".")
+      {:normal, rule} -> Enum.join(rule, ".")
+    end
   end
 
   @doc """
@@ -136,9 +137,9 @@ defmodule PublicSuffix do
     |> String.split(".")
     |> extract_labels_using_rules(extra_label_parts, options)
     |> case do
-         nil -> nil
-         labels -> Enum.join(labels, ".")
-       end
+      nil -> nil
+      labels -> Enum.join(labels, ".")
+    end
   end
 
   defp extract_labels_using_rules(labels, extra_label_parts, options) do
@@ -146,10 +147,10 @@ defmodule PublicSuffix do
       labels
       |> find_prevailing_rule(options)
       |> case do
-           # "If the prevailing rule is a exception rule, modify it by removing the leftmost label."
-           {:exception, labels} -> tl(labels)
-           {:normal, labels} -> labels
-         end
+        # "If the prevailing rule is a exception rule, modify it by removing the leftmost label."
+        {:exception, labels} -> tl(labels)
+        {:normal, labels} -> labels
+      end
       |> length
       |> Kernel.+(extra_label_parts)
 
@@ -166,30 +167,31 @@ defmodule PublicSuffix do
     # "If more than one rule matches, the prevailing rule is the one which is an exception rule."
     # "If no rules match, the prevailing rule is "*"."
     find_prevailing_exception_rule(labels, allowed_rule_types) ||
-    find_prevailing_normal_rule(labels, allowed_rule_types) ||
-    {:normal, ["*"]}
+      find_prevailing_normal_rule(labels, allowed_rule_types) ||
+      {:normal, ["*"]}
   end
 
   data_file = Path.expand("../data/public_suffix_list.dat", __DIR__)
   @external_resource data_file
 
-  raw_data = if Application.get_env(:public_suffix, :download_data_on_compile, false) do
-    case fetch_remote_file("https://publicsuffix.org/list/public_suffix_list.dat") do
-      {:ok, data} ->
+  raw_data =
+    if Application.get_env(:public_suffix, :download_data_on_compile, false) do
+      case fetch_remote_file("https://publicsuffix.org/list/public_suffix_list.dat") do
+        {:ok, data} ->
           IO.puts("PublicSuffix: fetched fresh data file for compilation.")
-        data
+          data
 
-      {:error, error} ->
-         raise """
-         PublicSuffix: failed to fetch fresh data file for compilation:
-          #{inspect(error)}
+        {:error, error} ->
+          raise """
+          PublicSuffix: failed to fetch fresh data file for compilation:
+           #{inspect(error)}
 
-         Try again or change `download_data_on_compile` config to `false` to use the cached copy of the rules file.
-         """
+          Try again or change `download_data_on_compile` config to `false` to use the cached copy of the rules file.
+          """
+      end
+    else
+      File.read!(data_file)
     end
-  else
-    File.read!(data_file)
-  end
 
   rule_maps = parse_rules(raw_data)
 

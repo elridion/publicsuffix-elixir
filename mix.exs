@@ -26,7 +26,7 @@ defmodule PublicSuffix.Mixfile do
 
   defp deps do
     [
-      {:idna, ">= 1.2.0 and < 6.0.0", runtime: false},
+      {:idna, ">= 6.0.0", runtime: false},
       # ex_doc and earmark are necessary to publish docs to hexdocs.pm.
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:earmark, ">= 0.0.0", only: :dev, runtime: false}
