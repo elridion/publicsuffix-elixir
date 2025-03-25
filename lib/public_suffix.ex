@@ -175,7 +175,8 @@ defmodule PublicSuffix do
   @external_resource data_file
 
   raw_data =
-    if Application.get_env(:public_suffix, :download_data_on_compile, false) do
+    if Application.compile_env(:public_suffix, :download_data_on_compile, false) or
+         System.get_env("PUBLIC_SUFFIX_DOWNLOAD_DATA_ON_COMPILE") == "true" do
       case fetch_remote_file("https://publicsuffix.org/list/public_suffix_list.dat") do
         {:ok, data} ->
           IO.puts("PublicSuffix: fetched fresh data file for compilation.")
