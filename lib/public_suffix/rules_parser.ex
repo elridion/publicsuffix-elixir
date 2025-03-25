@@ -1,14 +1,14 @@
 defmodule PublicSuffix.RulesParser do
   @moduledoc false
 
-  @type rule :: [String.t, ...]
+  @type rule :: [String.t(), ...]
   @type rule_type :: :icann | :private
   @type rule_map :: %{rule => rule_type}
 
-  @spec parse_rules(String.t) :: %{
+  @spec parse_rules(String.t()) :: %{
     exception_rules: rule_map,
     exact_match_rules: rule_map,
-    wild_card_rules: rule_map,
+          wild_card_rules: rule_map
   }
   def parse_rules(rule_string) do
     [icann_rule_string, private_rule_string] =
@@ -51,15 +51,15 @@ defmodule PublicSuffix.RulesParser do
     %{
       exception_rules: exception_rules,
       exact_match_rules: exact_match_rules,
-      wild_card_rules: wild_card_rules,
+      wild_card_rules: wild_card_rules
     }
   end
 
   @doc false
   def punycode_domain(rule) do
     rule
-    |> :unicode.characters_to_list
-    |> :idna.to_ascii
+    |> :unicode.characters_to_list()
+    |> :idna.to_ascii()
     |> to_string
   end
 
@@ -67,6 +67,6 @@ defmodule PublicSuffix.RulesParser do
     rules
     # "A domain or rule can be split into a list of labels using the separator "." (dot)."
     |> Stream.map(&{String.split(&1, "."), type})
-    |> Map.new
+    |> Map.new()
   end
 end

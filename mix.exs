@@ -2,15 +2,17 @@ defmodule PublicSuffix.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :public_suffix,
+    [
+      app: :public_suffix,
      version: "0.6.0",
-     elixir: "~> 1.2",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
+      elixir: "~> 1.15",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
      aliases: aliases(),
      description: description(),
      package: package(),
-     deps: deps()]
+      deps: deps()
+    ]
   end
 
   def application do
@@ -18,9 +20,7 @@ defmodule PublicSuffix.Mixfile do
       # :idna is intentionally NOT included in this list because it is
       # only used at compile time, as part of processing the publicsuffix.org
       # rules file. So it is not needed at runtime.
-      applications: [
-        :logger,
-      ]
+      applications: [:logger]
     ]
   end
 
@@ -43,16 +43,24 @@ defmodule PublicSuffix.Mixfile do
     [
       licenses: ["MIT"],
       maintainers: ["Myron Marston", "Ben Kirzhner"],
-      links: %{"GitHub" => "https://github.com/seomoz/publicsuffix-elixir",
-               "Public Suffix List" => "https://publicsuffix.org/"},
-      files: ["lib", "data/public_suffix_list.dat",
-              "mix.exs", "README.md", "LICENSE", "CHANGELOG.md"],
+      links: %{
+        "GitHub" => "https://github.com/seomoz/publicsuffix-elixir",
+        "Public Suffix List" => "https://publicsuffix.org/"
+      },
+      files: [
+        "lib",
+        "data/public_suffix_list.dat",
+        "mix.exs",
+        "README.md",
+        "LICENSE",
+        "CHANGELOG.md"
+      ]
     ]
   end
 
   defp aliases do
     [
-      "hex.publish": ["hex.publish", &tag_version/1],
+      "hex.publish": ["hex.publish", &tag_version/1]
     ]
   end
 
@@ -72,8 +80,12 @@ defmodule Mix.Tasks.PublicSuffix.SyncFiles do
 
   def run(_) do
     File.mkdir_p!(@data_dir)
-    sync_file "https://publicsuffix.org/list/public_suffix_list.dat", "public_suffix_list.dat"
-    sync_file "https://raw.githubusercontent.com/publicsuffix/list/master/tests/tests.txt", "tests.txt"
+    sync_file("https://publicsuffix.org/list/public_suffix_list.dat", "public_suffix_list.dat")
+
+    sync_file(
+      "https://raw.githubusercontent.com/publicsuffix/list/master/tests/tests.txt",
+      "tests.txt"
+    )
   end
 
   defp sync_file(remote_url, local_path) do
@@ -84,11 +96,11 @@ defmodule Mix.Tasks.PublicSuffix.SyncFiles do
       "-s",
       remote_url,
       "--output",
-      local_path,
+      local_path
     ]
     |> Enum.join(" ")
-    |> Mix.shell.cmd
+    |> Mix.shell().cmd
 
-    IO.puts "Synced #{remote_url} to #{local_path}"
+    IO.puts("Synced #{remote_url} to #{local_path}")
   end
 end

@@ -6,8 +6,8 @@ defmodule PublicSuffix.RemoteFileFetcher do
     # this is only used at compile time or in one-off mix tasks --
     # so at deployed runtime, this is not used and these applications
     # are not needed.
-    :inets.start
-    :ssl.start
+    :inets.start()
+    :ssl.start()
 
     url
     |> to_char_list
